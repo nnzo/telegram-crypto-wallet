@@ -1,0 +1,4 @@
+token: "telegramtokenhere"
+db: "databaseurl"
+blockexplorer: "http://explorer.cubicversecoin.org/tx/"
+coinname: "CubicverseCoin"
