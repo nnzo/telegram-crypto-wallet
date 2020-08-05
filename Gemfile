@@ -1,0 +1,7 @@
+source 'https://rubygems.org'
+gem 'telegram-bot-ruby'
+gem 'sequel'
+gem 'sqlite3'
+gem 'mysql2'
+# gem 'adequate_crypto_address'
+gem 'yaml'
