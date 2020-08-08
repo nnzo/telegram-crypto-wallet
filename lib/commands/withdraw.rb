@@ -15,7 +15,7 @@ def withdrawCoins(userid, amount, bot, address)
   elsif currentbal > amount # If user is trying to withdraw less than their total
     bot.api.send_message(chat_id: userid, text: 'Looks like a valid transaction, broadcasting to network.')
     tx = $rpc.sendfrom(userid.to_s, address, amount)
-    bot.api.send_message(chat_id: userid, text: "Transaction sent.\n\n #{amount.to_s.strip} CC was sent to #{address}.\n\nTXID: #{tx.to_s}")
+    bot.api.send_message(chat_id: userid, text: "Transaction sent.\n\n#{amount.to_s.strip} CC was sent to #{address}.\n\nTXID: #{tx.to_s}")
   else
     bot.api.send_message(chat_id: userid, text: "You do not have enough #{@conf['cointicker']} for this transaction. If you just deposited, wait for blockchain confirmations")
   end
