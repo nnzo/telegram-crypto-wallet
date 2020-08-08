@@ -15,6 +15,8 @@ class Wallets < Sequel::Model; end
 puts "Using table " + Wallets.table_name.to_s
 $wallets = db[:wallets]
 
+mainkb = Telegram::Bot::Types::ReplyKeyboardMarkup.new(keyboard: [%w(💰Balance💰 📧View Address📧), %w(📥Deposit📥 📤Withdraw📤)])
+rkb = Telegram::Bot::Types::ReplyKeyboardRemove.new(remove_keyboard: true)
 class String
   def numeric?
     return true if self =~ /\A\d+\Z/
@@ -28,18 +30,35 @@ Telegram::Bot::Client.run(@conf['token']) do |bot|
     case message.text
     when '/start'
       if createWalletIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.")
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: ckbp)
       else
-        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.")
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: ckbp)
       end
     when '/address'
       address = createAddressIfNotExist(bot, message)
       bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
+    when '/deposit'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
+    when '📥Deposit📥'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your deposit address is:\n\n#{address}")
+    when '/kb'
+      bot.api.send_message(chat_id: message.from.id, text: 'Enabled Keyboard.', reply_markup: mainkb)
+    when '/disablekb'
+      bot.api.send_message(chat_id: message.from.id, text: 'Disabled Keyboard.', reply_markup: rkb)
     when '/balance'
       bal = getBalanceForUser(message.from.id)[0]
       unbal = getBalanceForUser(message.from.id)[1]
       bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
-    when '💵Withdraw💵'
+    when '💰Balance💰'
+      bal = getBalanceForUser(message.from.id)[0]
+      unbal = getBalanceForUser(message.from.id)[1]
+      bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
+    when '📧View Address📧'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your deposit address is:\n\n#{address}")
+    when '📤Withdraw📤'
       withdrawHelp(message, bot)
     else
       if message.text.start_with?('/withdraw')
