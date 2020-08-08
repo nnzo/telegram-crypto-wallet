@@ -28,27 +28,26 @@ Telegram::Bot::Client.run(@conf['token']) do |bot|
     case message.text
     when '/start'
       if createWalletIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your address.")
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.")
       else
-        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your address.")
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.")
       end
     when '/address'
       address = createAddressIfNotExist(bot, message)
       bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
     when '/balance'
-      bal = getBalanceForUser(message.from.id)
-      bot.api.send_message(chat_id: message.from.id, text: "Your balance is #{bal} CC")
+      bal = getBalanceForUser(message.from.id)[0]
+      unbal = getBalanceForUser(message.from.id)[1]
+      bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
     when '💵Withdraw💵'
       withdrawHelp(message, bot)
     else
       if message.text.start_with?('/withdraw')
         values = message.text.split(' ')
-        if values[1].nil? == false && values[2].nil? == false && values[1].length == 34 && values[1].start_with?('C')
+        if values[1].nil? == false && values[2].nil? == false && values[1].length == 34 && values[1].start_with?(@conf['addressprefix'])
           amount = values[2].to_f if values[2].numeric? #/^\-?[0-9]+$/ =~ values[2]
-          # puts amount.class
-          # puts amount
           if amount.nil? == false
-            puts "1"
+            withdrawCoins(message.from.id, amount, bot)
           else
             withdrawHelp(message, bot)
           end

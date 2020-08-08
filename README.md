@@ -11,7 +11,7 @@ Simple cryptocurrency wallet for Telegram. Tipping coming soon.
 
 1. Make sure to rename your config file from `config.yaml.example` to `config.yaml`
 
-2. Place your telegram token, coin name, coin ticker, block explorer link & daemon login in the `config.yaml` file.
+2. Place your telegram token, coin name, coin ticker, address prefix, block explorer link & daemon login in the `config.yaml` file.
 
 3. Make sure you have MySQL installed and a nonroot user created that has access to a database.
 You can put your MySQL login details in the `config.yaml` file.
