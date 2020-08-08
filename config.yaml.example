@@ -3,5 +3,5 @@ db: "mysql2://username:password@localhost/database"
 blockexplorer: "http://explorer.cubicversecoin.org/tx/"
 coinname: "CubicverseCoin"
 cointicker: "BTC"
-addressprefix: "C"
+addressprefix: "1" # No support for multiple... yet
 coindaemon: "http://user:password@127.0.0.1:8332"
