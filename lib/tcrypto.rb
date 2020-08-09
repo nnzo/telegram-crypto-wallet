@@ -30,9 +30,9 @@ Telegram::Bot::Client.run(@conf['token']) do |bot|
     case message.text
     when '/start'
       if createWalletIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: ckbp)
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: mainkb)
       else
-        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: ckbp)
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: mainkb)
       end
     when '/address'
       address = createAddressIfNotExist(bot, message)
