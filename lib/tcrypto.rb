@@ -27,61 +27,58 @@ class String
   end
 end
 
-begin
-  Telegram::Bot::Client.run(@conf['token']) do |bot|
-    puts "Started bot"
-    bot.listen do |message|
-      case message.text
-      when '/start'
-        if createWalletIfNotExist(bot, message)
-          bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: mainkb)
-        else
-          bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: mainkb)
-        end
-      when '/address'
-        address = createAddressIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
-      when '/deposit'
-        address = createAddressIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
-      when '📥Deposit📥'
-        address = createAddressIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Your deposit address is:\n\n#{address}")
-      when '/kb'
-        bot.api.send_message(chat_id: message.from.id, text: 'Enabled Keyboard.', reply_markup: mainkb)
-      when '/disablekb'
-        bot.api.send_message(chat_id: message.from.id, text: 'Disabled Keyboard.', reply_markup: rkb)
-      when '/balance'
-        bal = getBalanceForUser(message.from.id)[0]
-        unbal = getBalanceForUser(message.from.id)[1]
-        bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
-      when '💰Balance💰'
-        bal = getBalanceForUser(message.from.id)[0]
-        unbal = getBalanceForUser(message.from.id)[1]
-        bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
-      when '📧View Address📧'
-        address = createAddressIfNotExist(bot, message)
-        bot.api.send_message(chat_id: message.from.id, text: "Your deposit address is:\n\n#{address}")
-      when '📤Withdraw📤'
-        withdrawHelp(message, bot)
+Telegram::Bot::Client.run(@conf['token']) do |bot|
+  puts "Started bot"
+  bot.api.get_updates(offset: -1)
+  bot.listen do |message|
+    case message.text
+    when '/start'
+      if createWalletIfNotExist(bot, message)
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: mainkb)
       else
-        if message.text.start_with?('/withdraw')
-          values = message.text.split(' ')
-          if values[1].nil? == false && values[2].nil? == false && values[1].length == 34 && values[1].start_with?(@conf['addressprefix'])
-            amount = values[2].to_f.round(7) if values[2].numeric? #/^\-?[0-9]+$/ =~ values[2]
-            address = values[1]
-            if amount.nil? == false
-              withdrawCoins(message.from.id, amount, bot, address)
-            else
-              withdrawHelp(message, bot)
-            end
+        bot.api.send_message(chat_id: message.from.id, text: "Welcome to the #{@conf['coinname']} wallet! Type /address to view your deposit address.", reply_markup: mainkb)
+      end
+    when '/address'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
+    when '/deposit'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your address is:\n\n#{address}")
+    when '📥Deposit📥'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your deposit address is:\n\n#{address}")
+    when '/kb'
+      bot.api.send_message(chat_id: message.from.id, text: 'Enabled Keyboard.', reply_markup: mainkb)
+    when '/disablekb'
+      bot.api.send_message(chat_id: message.from.id, text: 'Disabled Keyboard.', reply_markup: rkb)
+    when '/balance'
+      bal = getBalanceForUser(message.from.id)[0]
+      unbal = getBalanceForUser(message.from.id)[1]
+      bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
+    when '💰Balance💰'
+      bal = getBalanceForUser(message.from.id)[0]
+      unbal = getBalanceForUser(message.from.id)[1]
+      bot.api.send_message(chat_id: message.from.id, text: "Your confirmed balance: #{bal} #{@conf['cointicker']}\n\nPending balance: #{unbal} #{@conf['tokenticker']}")
+    when '📧View Address📧'
+      address = createAddressIfNotExist(bot, message)
+      bot.api.send_message(chat_id: message.from.id, text: "Your deposit address is:\n\n#{address}")
+    when '📤Withdraw📤'
+      withdrawHelp(message, bot)
+    else
+      if message.text.start_with?('/withdraw')
+        values = message.text.split(' ')
+        if values[1].nil? == false && values[2].nil? == false && values[1].length == 34 && values[1].start_with?(@conf['addressprefix'])
+          amount = values[2].to_f.round(7) if values[2].numeric? #/^\-?[0-9]+$/ =~ values[2]
+          address = values[1]
+          if amount.nil? == false
+            withdrawCoins(message.from.id, amount, bot, address)
           else
             withdrawHelp(message, bot)
           end
+        else
+          withdrawHelp(message, bot)
         end
       end
     end
   end
-rescue Telegram::Bot::Exceptions::ResponseError
-  return
 end
