@@ -9,6 +9,7 @@ def withdrawHelp(message, bot)
 end
 
 def withdrawCoins(userid, amount, bot, address)
+  puts "#{userid} Is trying to withdraw #{amount} CC"
   currentbal = $rpc.getbalance(userid.to_s, 12)
   if currentbal < amount # If user is trying to withdraw more than they have
     bot.api.send_message(chat_id: userid, text: "You do not have enough #{@conf['cointicker']} for this transaction. If you just deposited, wait for blockchain confirmations")
