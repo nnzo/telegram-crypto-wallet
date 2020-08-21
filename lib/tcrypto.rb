@@ -64,7 +64,7 @@ Telegram::Bot::Client.run(@conf['token']) do |bot|
       if message.text.start_with?('/withdraw')
         values = message.text.split(' ')
         if values[1].nil? == false && values[2].nil? == false && values[1].length == 34 && values[1].start_with?(@conf['addressprefix'])
-          amount = values[2].to_f if values[2].numeric? #/^\-?[0-9]+$/ =~ values[2]
+          amount = values[2].to_f / '%.8g' if values[2].numeric? #/^\-?[0-9]+$/ =~ values[2]
           address = values[1]
           if amount.nil? == false
             withdrawCoins(message.from.id, amount, bot, address)
